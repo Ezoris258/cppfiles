@@ -1,8 +1,13 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-int l[100005],r[10005];
+// int left[100005],reght[10005];
 
+struct  student
+{
+    int l,id,r;
+    bool init=true;
+};
 
 
 int main(){
@@ -12,22 +17,22 @@ int main(){
     
     int n;  cin>>n;
 
-    int head=1;
-
-
+    vector<student> stu(n+5);
+     stu[1]={-1,1,};
     for(int i=2;i<=n;i++){
         int k,p;
         cin>>k>>p;
-        
-        if(p==0){  //left
-            l[i]=l[k];
-            r[k]=i;
-            l[i]=k;
+        stu[i].id=i;
+        if(p==0){
+            stu[i].r=stu[k].id;
+            stu[k].l=stu[i].id;
+            stu[k-1].r=stu[i].id;
         }
 
-        else {  //right
-            r[k]=i;
-            l[i]=k;
+        else {
+            stu[i].l=stu[k].id;
+            stu[k].r=stu[i].id;
+            stu[k+1].l=stu[i].id;
         }
 
 
