@@ -2,51 +2,52 @@
 using namespace std;
 
 int l[100005],r[10005];
-
+bool init[100005];
 
 
 int main(){
     ios::sync_with_stdio(false);
     cin.tie(NULL);
 
-    
     int n;  cin>>n;
 
-    int head=1;
+    l[0]=1; r[0]=1;
+    l[1]=0; r[1]=0;
 
+    init[0] = init[1]=true;
 
-    for(int i=2;i<=n;i++){
-        int k,p;
-        cin>>k>>p;
-        
-        if(p==0){  //left
+    for (int i = 2; i <= n; i++)
+    {
+        int k,p;  cin>>k>>p;
+
+        init[i]=true;
+        if(p==0){ //i k
             l[i]=l[k];
-            r[k]=i;
-            l[i]=k;
-        }
+            r[i]=k;
+            l[k]=i;
+            r[l[k]]=i;
 
-        else {  //right
-            r[k]=i;
-            l[i]=k;
         }
-
+        else {  //k  i  a
+            r[i]=r[k];
+            l[i]=k;
+            r[k]=i;
+            l[r[k]]=i;
+        }
 
     }
 
     int m;  cin>>m;
-    vector <int> p(m+1);
-    for(int j=1;j<=m;j++){
-        cin>>p[j];
-    }
-    sort(p.begin()+1,p.end());
 
-    for(int j=1;j<=m;j++){
-        if(stu[j].id==p[j])  stu[j].init=false;
+    for(int i=0;i<m;i++){
+        int rem;  cin>>rem;
 
+        init[rem]=false;
     }
-    for(int j=1;j<n;j++){
-        if(stu[j].init)  cout<<stu[j].id<<' ';
-
-    }
+    
+    bool first=true;
+    int pos=0;
+    
+    
 
 }
