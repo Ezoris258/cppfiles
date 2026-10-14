@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一起学数据结构：哈希表和线段树</title>
+<style>
+  :root{
+    --bg:#fdf8f3;
+    --card:#ffffff;
+    --ink:#2b2b2b;
+    --soft:#6b6b6b;
+    --hash:#2b7a8c;
+    --hash-bg:#e6f4f7;
+    --seg:#3d8b5f;
+    --seg-bg:#e9f6ee;
+    --ex:#8a5cb8;
+    --ex-bg:#f3ecfa;
+    --warm:#d9822b;
+    --warm-bg:#fdf0e0;
+    --good:#2e7d4f;
+    --bad:#c0392b;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    font-size:19px;
+    line-height:1.85;
+    padding-bottom:80px;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px;}
+
+  /* 顶部 */
+  header{
+    background:linear-gradient(135deg,#2b7a8c,#3d8b5f);
+    color:#fff;
+    padding:34px 18px 28px;
+    text-align:center;
+    border-radius:0 0 26px 26px;
+  }
+  header h1{font-size:1.7rem;margin:6px 0 8px;}
+  header p{font-size:1.05rem;margin:4px 0;opacity:.95;}
+  .hello{font-size:1.15rem;font-weight:bold;}
+
+  /* 工具条 */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+    margin:18px 0;align-items:center;
+  }
+  .toolbar button{
+    border:none;border-radius:22px;padding:9px 18px;font-size:1rem;
+    cursor:pointer;background:#fff;color:var(--ink);
+    box-shadow:0 2px 6px rgba(0,0,0,.08);font-weight:bold;
+    border:2px solid #e3ddd6;
+  }
+  .toolbar button:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.12);}
+  .toolbar .lbl{font-size:.95rem;color:var(--soft);}
+
+  /* 目录 */
+  nav.toc{
+    background:var(--card);border-radius:18px;padding:18px 22px;
+    box-shadow:0 3px 12px rgba(0,0,0,.06);margin:10px 0 30px;
+  }
+  nav.toc h2{font-size:1.15rem;margin:0 0 10px;}
+  nav.toc a{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 8px;border-radius:12px;text-decoration:none;color:var(--ink);
+    font-size:1.02rem;
+  }
+  nav.toc a:hover{background:#f4efe9;}
+  nav.toc .num{
+    width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:bold;flex-shrink:0;
+  }
+
+  /* 章节卡片 */
+  section.card{
+    background:var(--card);border-radius:20px;padding:28px 26px;margin:34px 0;
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+  }
+  section.card h2{
+    font-size:1.45rem;margin:0 0 4px;display:flex;align-items:center;gap:12px;
+  }
+  .tag{
+    display:inline-block;font-size:.82rem;font-weight:bold;padding:3px 12px;border-radius:14px;
+    margin-left:8px;vertical-align:middle;
+  }
+  h3{font-size:1.18rem;margin:26px 0 8px;}
+  .lead{font-size:1.05rem;color:var(--soft);margin:6px 0 18px;}
+
+  /* 比喻框 */
+  .story{
+    border-radius:16px;padding:18px 20px;margin:18px 0;
+    border-left:6px solid;
+  }
+  .story .ttl{font-weight:bold;font-size:1.05rem;display:block;margin-bottom:6px;}
+
+  /* 步骤 */
+  .step{
+    display:flex;gap:14px;margin:16px 0;align-items:flex-start;
+  }
+  .step .n{
+    width:34px;height:34px;border-radius:50%;flex-shrink:0;
+    color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;
+    font-size:1rem;margin-top:4px;
+  }
+  .step .txt{flex:1;}
+
+  /* 提示/重点框 */
+  .tip{
+    border-radius:14px;padding:14px 18px;margin:16px 0;font-size:1rem;
+    background:var(--warm-bg);border-left:6px solid var(--warm);
+  }
+  .tip b{color:#a05a12;}
+  .keybox{
+    border-radius:14px;padding:14px 18px;margin:16px 0;
+  }
+
+  /* 代码 */
+  pre{
+    background:#1f2933;color:#e6edf3;border-radius:14px;padding:18px 20px;
+    overflow-x:auto;font-size:.92rem;line-height:1.6;
+    font-family:"Cascadia Code","Consolas","Courier New",monospace;
+  }
+  pre code{white-space:pre;}
+  .codecap{font-size:.9rem;color:var(--soft);margin:6px 0 0;}
+
+  /* 代码讲解卡 */
+  .codeexplain{
+    border:2px dashed #d8cfc5;border-radius:14px;padding:14px 18px;margin:14px 0;
+    background:#fcfaf7;
+  }
+  .codeexplain .ln{font-weight:bold;color:var(--soft);font-family:monospace;display:block;margin-bottom:2px;}
+  .codeexplain .mean{margin:0 0 12px;}
+
+  /* 测验 */
+  .quiz{
+    background:#faf7f3;border-radius:16px;padding:18px 20px;margin:22px 0;
+    border:2px solid #ede6dd;
+  }
+  .quiz .q{font-weight:bold;font-size:1.05rem;margin:4px 0 12px;}
+  .quiz .opts{display:flex;flex-direction:column;gap:10px;}
+  .quiz button.opt{
+    text-align:left;border:2px solid #e0d8cf;background:#fff;border-radius:12px;
+    padding:12px 16px;font-size:1.02rem;cursor:pointer;font-family:inherit;
+  }
+  .quiz button.opt:hover{border-color:#b9b0a5;background:#fdfbf8;}
+  .quiz button.opt.right{background:#e4f4ea;border-color:var(--good);}
+  .quiz button.opt.wrong{background:#fdecea;border-color:var(--bad);}
+  .quiz .fb{margin:12px 0 0;font-weight:bold;min-height:1.5em;}
+  .fb.good{color:var(--good);}
+  .fb.bad{color:var(--bad);}
+
+  /* 前进后退 */
+  .pager{display:flex;justify-content:space-between;gap:12px;margin:26px 0;}
+  .pager a{
+    text-decoration:none;background:#fff;border:2px solid #e3ddd6;border-radius:16px;
+    padding:14px 20px;font-weight:bold;color:var(--ink);flex:1;text-align:center;
+    font-size:1rem;
+  }
+  .pager a:hover{background:#f4efe9;}
+
+  /* 朗读按钮 */
+  .speak{
+    border:none;border-radius:22px;padding:8px 16px;font-size:.95rem;cursor:pointer;
+    background:#fff;color:var(--ink);border:2px solid #e3ddd6;font-weight:bold;
+    margin-left:auto;
+  }
+  .speak:hover{background:#f4efe9;}
+  .speak.on{background:#e4f4ea;border-color:var(--good);color:var(--good);}
+
+  footer{
+    text-align:center;color:var(--soft);font-size:1rem;margin-top:20px;
+  }
+  .big-em{font-size:1.15rem;}
+  @media (max-width:600px){
+    body{font-size:18px;}
+    header h1{font-size:1.4rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hello">👋 你好呀，欢迎你来学习！</div>
+  <h1>一起学数据结构<br>哈希表 &amp; 线段树</h1>
+  <p>不要怕，这里每个难词都会用<b>生活中的例子</b>讲给你听。</p>
+  <p>慢慢看，累了就休息一下 😊</p>
+</header>
+
+<div class="wrap">
+
+  <!-- 工具条 -->
+  <div class="toolbar">
+    <span class="lbl">字的大小：</span>
+    <button id="fontDown" aria-label="缩小字体">A−</button>
+    <button id="fontUp" aria-label="放大字体">A＋</button>
+    <span class="lbl">｜</span>
+    <button id="readAll">🔊 从头读给我听</button>
+    <button id="stopRead">⏹ 停止朗读</button>
+  </div>
+
+  <!-- 目录 -->
+  <nav class="toc" aria-label="目录">
+    <h2>📖 今天学什么（点一下跳过去）</h2>
+    <a href="#welcome"><span class="num" style="background:#d9822b;">0</span> 开始之前：这个网页怎么用</a>
+    <a href="#hash"><span class="num" style="background:#2b7a8c;">1</span> 哈希表：像一排储物柜</a>
+    <a href="#segment"><span class="num" style="background:#3d8b5f;">2</span> 线段树：像分组的小组长</a>
+    <a href="#examples"><span class="num" style="background:#8a5cb8;">3</span> 两个小例题</a>
+    <a href="#summary"><span class="num" style="background:#c0392b;">4</span> 总结 + 小测验</a>
+  </nav>
+
+  <!-- 0 欢迎 -->
+  <section class="card" id="welcome">
+    <h2>🌱 开始之前 <button class="speak" data-speak="welcome">🔊 朗读</button></h2>
+    <p class="lead">这一页很简单，只要记住 3 件事。</p>
+    <div class="story" style="background:var(--warm-bg);border-color:var(--warm);">
+      <span class="ttl">这个网页怎么用？</span>
+      <div class="step"><div class="n" style="background:var(--warm);">1</div><div class="txt"><b>慢慢看</b>：每一段都很短，一次看懂一小段就够了。</div></div>
+      <div class="step"><div class="n" style="background:var(--warm);">2</div><div class="txt"><b>点按钮</b>：看到「🔊 朗读」就点一下，网页会读给你听。字太小就点上面的「A＋」。</div></div>
+      <div class="step"><div class="n" style="background:var(--warm);">3</div><div class="txt"><b>做小测验</b>：每个部分后面都有几个选择题，答错了也没关系，它会告诉你为什么。</div></div>
+    </div>
+    <p class="big-em">准备好了吗？我们开始吧！👇</p>
+  </section>
+
+  <!-- 1 哈希表 -->
+  <section class="card" id="hash">
+    <h2>① 哈希表 <span class="tag" style="background:var(--hash-bg);color:var(--hash);">Hash Table</span>
+      <button class="speak" data-speak="hash">🔊 朗读</button>
+    </h2>
+    <p class="lead">哈希表，就是「把东西放进带号码的柜子，找的时候直接去那个柜子拿」。</p>
+
+    <h3>🧺 先听一个生活故事</h3>
+    <div class="story" style="background:var(--hash-bg);border-color:var(--hash);">
+      <span class="ttl">学校门口的储物柜</span>
+      <p>学校门口有 <b>10 个储物柜</b>，柜子上写着号码：0、1、2、3 … 9。</p>
+      <p>你帮全班同学存东西。每个同学都有一个<b>学号</b>（比如 23 号、33 号、45 号……）。</p>
+      <p>你的规则是：<b>学号 ÷ 10，余数是几，就放进几号柜。</b></p>
+      <div class="step"><div class="n" style="background:var(--hash);">例</div><div class="txt">23 ÷ 10 余 <b>3</b> → 放进 <b>3 号柜</b>。</div></div>
+      <div class="step"><div class="n" style="background:var(--hash);">例</div><div class="txt">45 ÷ 10 余 <b>5</b> → 放进 <b>5 号柜</b>。</div></div>
+      <p>想找 23 号同学的东西时，不用一个柜子一个柜子翻，<b>直接去 3 号柜</b>，一下就找到了！</p>
+    </div>
+
+    <h3>🔑 三个重要的词</h3>
+    <div class="step"><div class="n" style="background:var(--hash);">1</div><div class="txt"><b>键（Key）</b>：就是「学号」。它是东西的名字号码。</div></div>
+    <div class="step"><div class="n" style="background:var(--hash);">2</div><div class="txt"><b>哈希函数</b>：就是那个「÷10 看余数」的<b>规则</b>。它把一个大数字，变成一个小的柜子号。</div></div>
+    <div class="step"><div class="n" style="background:var(--hash);">3</div><div class="txt"><b>冲突</b>：两个不同的学号，算出了<b>同一个柜子</b>。</div></div>
+
+    <div class="tip"><b>💥 什么是冲突？</b><br>
+      23 ÷ 10 余 3，33 ÷ 10 也余 3。两个人都想去 3 号柜，这就是「冲突」。<br>
+      怎么办？—— 在 3 号柜里<b>挂一串</b>，像钥匙串一样，一个连着一个。这个方法叫<b>「拉链法」</b>。</div>
+
+    <h3>⚡ 为什么它很快？</h3>
+    <p>如果没有哈希表，要找一个东西，可能要<b>从头一个一个看</b>（很慢）。</p>
+    <p>有了哈希表，算出柜子号，<b>一步就走到那个柜子</b>。我们把这种「不用一个个找」的速度，写成 <b>O(1)</b>。</p>
+
+    <h3>💻 代码长这样（先看个大概，下面一行行讲）</h3>
+    <pre><code>const int MOD = 100003;   // 柜子总数（用质数，冲突更少）
+int head[MOD], nxt[N], key[N], val[N], tot;
+
+void insert(int k, int v) {        // 存入：名字号码 k，值 v
+    int h = (k % MOD + MOD) % MOD; // 算柜子号 h（负数也安全）
+    key[++tot] = k;                // 记下这个名字号码
+    val[tot] = v;                  // 记下它的值
+    nxt[tot] = head[h];            // 新东西连到柜子原来的第一件
+    head[h] = tot;                 // 柜子现在指向新东西
+}
+
+int find(int k) {                  // 查找：名字号码 k
+    int h = (k % MOD + MOD) % MOD; // 先算柜子号
+    for (int i = head[h]; i; i = nxt[i]) { // 顺着那串一件件看
+        if (key[i] == k) return val[i];    // 找到了！把值还给你
+    }
+    return -1;                     // 找遍了都没有
+}</code></pre>
+    <p class="codecap">👆 现在可能有点晕，没关系，我们一行一行看。</p>
+
+    <h3>🔍 一行一行看代码</h3>
+    <div class="codeexplain">
+      <span class="ln">int head[MOD], nxt[N], key[N], val[N], tot;</span>
+      <p class="mean"><b>准备了 4 个本子 + 1 个计数器：</b><br>
+      • <code>head[h]</code> = 「h 号柜里第一件东西」放在哪。<br>
+      • <code>key[]</code> = 每件东西的名字号码。<br>
+      • <code>val[]</code> = 每件东西的值。<br>
+      • <code>nxt[]</code> = 同一柜里「下一件」在哪（像钥匙串，一个连一个）。<br>
+      • <code>tot</code> = 已经存了几件东西。</p>
+    </div>
+    <div class="codeexplain">
+      <span class="ln">int h = (k % MOD + MOD) % MOD;</span>
+      <p class="mean"><b>这就是「哈希函数」！</b> <code>k % MOD</code> 就是「k ÷ MOD 看余数」。<br>
+      外面多包一层，是为了让<b>负数</b>也能算出正确的柜子号。</p>
+    </div>
+    <div class="codeexplain">
+      <span class="ln">nxt[tot] = head[h];  head[h] = tot;</span>
+      <p class="mean"><b>像往链子最前面挂一个新钥匙：</b>新东西先连上柜子原来的第一件，然后让柜子指向这个新东西。</p>
+    </div>
+    <div class="codeexplain">
+      <span class="ln">for (int i = head[h]; i; i = nxt[i])</span>
+      <p class="mean"><b>查找时顺着链走：</b>从柜子的第一件开始，一件一件看下一件，直到看完。</p>
+    </div>
+    <div class="codeexplain">
+      <span class="ln">return -1;  // 未查找到目标</span>
+      <p class="mean"><b>没找到就给一个特殊数字 -1</b>，表示「这里没有」。</p>
+    </div>
+
+    <!-- 哈希测验 -->
+    <div class="quiz" data-quiz="hash">
+      <div class="q">🎯 小测验（点一下你选的答案）</div>
+      <div class="opts">
+        <button class="opt" data-right="0">哈希函数的作用是什么？<br><small>A. 把大数字变成一个小柜子号</small></button>
+        <button class="opt">哈希函数的作用是什么？<br><small>B. 让数字变得更大</small></button>
+        <button class="opt">哈希函数的作用是什么？<br><small>C. 把东西藏起来</small></button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">两个不同的学号算出同一个柜子，这叫什么？</div>
+      <div class="opts">
+        <button class="opt">A. 排队</button>
+        <button class="opt" data-right="0">B. 冲突</button>
+        <button class="opt">C. 求和</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">哈希表查找的速度，通常写作？</div>
+      <div class="opts">
+        <button class="opt" data-right="0">A. O(1)（一步就到）</button>
+        <button class="opt">B. O(n)（要一个个看）</button>
+        <button class="opt">C. 特别慢</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- 2 线段树 -->
+  <section class="card" id="segment">
+    <h2>② 线段树 <span class="tag" style="background:var(--seg-bg);color:var(--seg);">Segment Tree</span>
+      <button class="speak" data-speak="segment">🔊 朗读</button>
+    </h2>
+    <p class="lead">线段树，就是「提前把队伍分好小组、记好每组的总数，问的时候不用从头数」。</p>
+
+    <h3>🏫 再听一个生活故事</h3>
+    <div class="story" style="background:var(--seg-bg);border-color:var(--seg);">
+      <span class="ttl">体育老师查身高</span>
+      <p>班上有 <b>8 个同学</b>站成一排。老师经常问：「第 3 个到第 6 个同学的身高<b>加起来</b>是多少？」</p>
+      <p>如果每次<b>从头一个一个加</b>，问得多了就很慢。</p>
+      <p>聪明的办法：<b>提前把队伍分成小组</b>，每个小组选一个<b>小组长</b>，组长记住「我们这组身高总和」。</p>
+      <p>小组再合成大组，大组的组长也记住总和。这样从上到下，像一棵<b>倒过来的树</b>。</p>
+      <p>老师要问第 3～6 个，只需要找到几个合适的小组，把它们的总和<b>加一下</b>就出来了——<b>很快</b>！</p>
+    </div>
+
+    <h3>🌳 线段树长什么样？</h3>
+    <p>把一排数字<b>一直对半切</b>：</p>
+    <div class="keybox" style="background:var(--seg-bg);">
+      <p style="margin:4px 0;">一整排 8 个 → 切成 4 个 + 4 个 → 再切成 2 + 2 + 2 + 2 → 最后每个都是 1 个。</p>
+      <p style="margin:4px 0;">每个「一段」都有一个<b>组长</b>，记着这一段的总和。</p>
+      <p style="margin:4px 0;">因为每次都切成两半，所以<b>层数很少</b>（大约 log₂n 层），所以很快，写作 <b>O(log n)</b>。</p>
+    </div>
+
+    <h3>📝 什么是「懒标记（Lazy Tag）」？</h3>
+    <div class="tip"><b>📌 一个贴便签的故事：</b><br>
+      老师想让「第 3 到第 6 个同学每人 +5 厘米」。<br>
+      不用真的<b>一个个</b>去改！只需在<b>小组长</b>那里贴一张便签：「这组每人 +5」。<br>
+      等以后真的需要问这组<b>每个人的具体身高</b>时，组长才把便签发下去。<br>
+      这张「先记着、以后再做」的便签，就叫<b>懒标记</b>。</div>
+    <p>懒标记有两句话要记住：</p>
+    <div class="step"><div class="n" style="background:var(--seg);">1</div><div class="txt"><b>组长自己的数字是最新的、正确的</b>（比如总和已经加了 5×人数）。</div></div>
+    <div class="step"><div class="n" style="background:var(--seg);">2</div><div class="txt"><b>组员（孩子）的数字还是旧的</b>，等需要时再把便签发下去更新。</div></div>
+
+    <h3>💻 核心代码（看个大概）</h3>
+    <pre><code>void apply(int p, int l, int r, long long k) {
+    sum[p] += (r - l + 1) * k;   // 这段有 (r-l+1) 个元素，每个 +k
+    lazy[p] += k;                 // 贴便签：这段欠下的修改
+}
+
+void pushdown(int p, int l, int r) {
+    if (lazy[p] == 0 || l == r) return;  // 没有便签，或已是最小的段
+    int mid = (l + r) / 2;
+    apply(p &lt;&lt; 1, l, mid, lazy[p]);       // 便签发给左孩子
+    apply(p &lt;&lt; 1 | 1, mid + 1, r, lazy[p]); // 便签发给右孩子
+    lazy[p] = 0;                     // 便签发完了，清空
+}
+
+void update(int p, int l, int r, int ql, int qr, long long k) {
+    if (ql &lt;= l &amp;&amp; r &lt;= qr) { apply(p, l, r, k); return; } // 整段都要改
+    pushdown(p, l, r);                 // 先发掉旧的便签
+    int mid = (l + r) / 2;
+    if (ql &lt;= mid) update(p &lt;&lt; 1, l, mid, ql, qr, k);
+    if (qr &gt; mid) update(p &lt;&lt; 1 | 1, mid + 1, r, ql, qr, k);
+    sum[p] = sum[p &lt;&lt; 1] + sum[p &lt;&lt; 1 | 1];   // 重新算组长的总和
+}</code></pre>
+    <p class="codecap">👆 别慌，下面挑最重要的两处讲。</p>
+
+    <h3>🔍 挑两处最重要的讲</h3>
+    <div class="codeexplain">
+      <span class="ln">sum[p] += (r - l + 1) * k;</span>
+      <p class="mean">这段队伍有 <code>(r-l+1)</code> 个人，每个人 +k，所以<b>总和</b>就要加 <code>(r-l+1)×k</code>。</p>
+    </div>
+    <div class="codeexplain">
+      <span class="ln">pushdown —— 把便签发下去</span>
+      <p class="mean">当我们需要查看<b>更细的小组</b>时，组长要把便签先发给<b>左、右两个孩子</b>，然后把自己的便签<b>清空</b>。这样孩子的最新数字就对了。</p>
+    </div>
+
+    <!-- 线段树测验 -->
+    <div class="quiz" data-quiz="seg">
+      <div class="q">🎯 小测验（点一下你选的答案）</div>
+      <div class="opts">
+        <button class="opt" data-right="0">线段树把一排数字做什么？<br><small>A. 一直对半切，形成一棵树</small></button>
+        <button class="opt">线段树把一排数字做什么？<br><small>B. 全部加起来成一个数</small></button>
+        <button class="opt">线段树把一排数字做什么？<br><small>C. 打乱顺序</small></button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">「懒标记」像下面哪个东西？</div>
+      <div class="opts">
+        <button class="opt">A. 一个闹钟</button>
+        <button class="opt" data-right="0">B. 一张「先记着、以后再做」的便签</button>
+        <button class="opt">C. 一把锁</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">线段树查询的速度，通常写作？</div>
+      <div class="opts">
+        <button class="opt">A. O(1)</button>
+        <button class="opt" data-right="0">B. O(log n)（层数很少，很快）</button>
+        <button class="opt">C. O(n)</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- 3 例题 -->
+  <section class="card" id="examples">
+    <h2>③ 两个小例题 <span class="tag" style="background:var(--ex-bg);color:var(--ex);">实战</span>
+      <button class="speak" data-speak="examples">🔊 朗读</button>
+    </h2>
+    <p class="lead">学了就用，看看这两个题怎么套上刚学的东西。</p>
+
+    <h3>🧮 例题一：A − B 数对（用哈希表）</h3>
+    <div class="story" style="background:var(--ex-bg);border-color:var(--ex);">
+      <span class="ttl">题目在问什么？</span>
+      <p>给你一串数字，还有一个数字 C。问你：<b>有多少对数字 (A, B)，能让 A − B = C？</b></p>
+      <p>比如数字是 [3, 5, 8]，C = 3：<br>
+      • 8 − 5 = 3 ✔️<br>
+      • 5 − 3 = 2 ✖️（不是 3）<br>
+      所以答案是 <b>1 对</b>。</p>
+    </div>
+    <div class="step"><div class="n" style="background:var(--ex);">1</div><div class="txt"><b>换个说法：</b> A − B = C，也就是 <b>B = A − C</b>。所以对每个 A，只要知道「A − C」出现了几次就行。</div></div>
+    <div class="step"><div class="n" style="background:var(--ex);">2</div><div class="txt"><b>用哈希表数次数：</b>先读一遍数字，用哈希表记下「每个数字出现了几次」。</div></div>
+    <div class="step"><div class="n" style="background:var(--ex);">3</div><div class="txt"><b>再查一遍：</b>对每个 A，去哈希表里查「A − C」出现几次，加起来就是答案。</div></div>
+    <pre><code>unordered_map&lt;long long, long long&gt; cnt;   // 哈希表：数字 → 出现次数
+for (int i = 0; i &lt; n; i++) { cin &gt;&gt; a[i]; cnt[a[i]]++; }  // 数次数
+long long ans = 0;
+for (int i = 0; i &lt; n; i++) {
+    auto it = cnt.find(a[i] - c);        // 找 A-C
+    if (it != cnt.end()) ans += it-&gt;second; // 找到就加上次数
+}
+cout &lt;&lt; ans &lt;&lt; "\n";</code></pre>
+    <div class="tip"><b>⚠️ 小心：</b>答案可能很大，用 <code>long long</code> 存，别用 <code>int</code>，不然会「装不下」（溢出）。</div>
+
+    <h3>📏 例题二：线段树 1（用线段树）</h3>
+    <div class="story" style="background:var(--ex-bg);border-color:var(--ex);">
+      <span class="ttl">题目在问什么？</span>
+      <p>给你一排数字，有两种操作：</p>
+      <p>• <b>操作 1：</b>把第 x 到第 y 个数字，<b>每个都 +k</b>。</p>
+      <p>• <b>操作 2：</b>问第 x 到第 y 个数字的<b>总和</b>。</p>
+    </div>
+    <div class="step"><div class="n" style="background:var(--ex);">1</div><div class="txt">用<b>线段树</b>存「每段的总和」，这样查总和很快。</div></div>
+    <div class="step"><div class="n" style="background:var(--ex);">2</div><div class="txt">要「一段都 +k」时，用<b>懒标记</b>，不用一个个改。</div></div>
+    <div class="step"><div class="n" style="background:var(--ex);">3</div><div class="txt">要问具体总和时，先把懒标记<b>发下去</b>（pushdown），再算。</div></div>
+    <div class="tip"><b>⚠️ 两个坑：</b><br>
+    1. 发完便签后，<b>记得清空组长自己的便签</b>（<code>lazy[p] = 0</code>）。<br>
+    2. 总和可能非常大（到 2×10¹⁸），<b>要用 long long</b>。</div>
+  </section>
+
+  <!-- 4 总结 -->
+  <section class="card" id="summary">
+    <h2>④ 总结 + 总测验 <span class="tag" style="background:#fdecea;color:var(--bad);">回顾</span>
+      <button class="speak" data-speak="summary">🔊 朗读</button>
+    </h2>
+
+    <h3>📋 今天记住这两张「小卡片」就够了</h3>
+    <div class="keybox" style="background:var(--hash-bg);">
+      <b style="color:var(--hash);">🧺 哈希表 = 储物柜</b><br>
+      • 用一个规则（哈希函数）算出「放哪个柜子」。<br>
+      • 两个东西挤一个柜子 = 冲突，用「拉链法」串起来。<br>
+      • 找东西一步就到，速度 <b>O(1)</b>。
+    </div>
+    <div class="keybox" style="background:var(--seg-bg);">
+      <b style="color:var(--seg);">🌳 线段树 = 分组小组长</b><br>
+      • 把一排数字一直对半切，做成树。<br>
+      • 每段有个组长，记着这段的总和。<br>
+      • 懒标记 = 「先记着、以后再做」的便签。<br>
+      • 查和改都很快，速度 <b>O(log n)</b>。
+    </div>
+
+    <h3>🎯 总测验（最后考考你）</h3>
+    <div class="quiz" data-quiz="final">
+      <div class="q">想要「一步就找到」一个数字出现了几次，用哪个？</div>
+      <div class="opts">
+        <button class="opt" data-right="0">A. 哈希表</button>
+        <button class="opt">B. 线段树</button>
+        <button class="opt">C. 一个一个数</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">想要「快速查一段的总和、还能一段都 +k」，用哪个？</div>
+      <div class="opts">
+        <button class="opt">A. 哈希表</button>
+        <button class="opt" data-right="0">B. 线段树（配懒标记）</button>
+        <button class="opt">C. 从头加</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+
+      <div class="q" style="margin-top:20px;">答案可能很大时，要用什么类型存，防止「装不下」？</div>
+      <div class="opts">
+        <button class="opt">A. int</button>
+        <button class="opt" data-right="0">B. long long</button>
+        <button class="opt">C. char</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </div>
+
+    <div class="story" style="background:#eefaf1;border-color:var(--good);">
+      <span class="ttl">🎉 你太棒了！</span>
+      <p>不管答对几题，你能看到这里，已经比昨天更厉害了。</p>
+      <p>这些内容本来就很难，很多大人也要学很久。你已经迈出了最勇敢的一步 💪</p>
+      <p>休息一下，回头再看一遍，会越来越懂。</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>📄 内容来自文件《20261014.pdf》｜ 慢慢学，你一定可以的 ❤️</p>
+  </footer>
+</div>
+
+<script>
+  // ===== 字体大小 =====
+  let fs = 19;
+  const body = document.body;
+  document.getElementById('fontUp').onclick = () => { fs = Math.min(30, fs + 2); body.style.fontSize = fs + 'px'; };
+  document.getElementById('fontDown').onclick = () => { fs = Math.max(15, fs - 2); body.style.fontSize = fs + 'px'; };
+
+  // ===== 测验（点选项立即反馈）=====
+  document.querySelectorAll('.quiz').forEach(quiz => {
+    quiz.querySelectorAll('.opts').forEach(optGroup => {
+      const btns = optGroup.querySelectorAll('button.opt');
+      const fb = optGroup.nextElementSibling;
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.classList.contains('right') || btn.classList.contains('wrong')) return; // 已答过
+          const isRight = btn.hasAttribute('data-right');
+          btns.forEach(b => {
+            if (b.hasAttribute('data-right')) b.classList.add('right');
+            if (b === btn && !isRight) b.classList.add('wrong');
+          });
+          fb.textContent = isRight
+            ? '✅ 答对啦，真棒！'
+            : '❌ 再想想哦～ 绿色的是正确答案。';
+          fb.className = 'fb ' + (isRight ? 'good' : 'bad');
+        });
+      });
+    });
+  });
+
+  // ===== 朗读（文字转语音）=====
+  const texts = {
+    welcome: document.getElementById('welcome').innerText,
+    hash: document.getElementById('hash').innerText,
+    segment: document.getElementById('segment').innerText,
+    examples: document.getElementById('examples').innerText,
+    summary: document.getElementById('summary').innerText,
+  };
+  let speaking = false;
+  function stopSpeak(){
+    if (window.speechSynthesis) { window.speechSynthesis.cancel(); }
+    speaking = false;
+    document.querySelectorAll('.speak').forEach(b => b.classList.remove('on'));
+  }
+  function speak(t){
+    if (!window.speechSynthesis) { alert('这个浏览器不支持朗读，试试用 Edge 或 Chrome 打开。'); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t.replace(/\s+/g, ' '));
+    u.lang = 'zh-CN';
+    u.rate = 0.9;   // 稍慢一点，听得清
+    u.pitch = 1.0;
+    // 尽量选中文语音
+    const voices = window.speechSynthesis.getVoices();
+    const zh = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+    if (zh) u.voice = zh;
+    speaking = true;
+    const clear = () => {
+      speaking = false;
+      document.querySelectorAll('.speak').forEach(b => b.classList.remove('on'));
+      const ra = document.getElementById('readAll');
+      if (ra) ra.classList.remove('on');
+    };
+    u.onend = clear;
+    u.onerror = clear;
+    window.speechSynthesis.speak(u);
+  }
+  document.querySelectorAll('.speak[data-speak]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (b.classList.contains('on')) { stopSpeak(); return; }
+      document.querySelectorAll('.speak').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      speak(texts[b.getAttribute('data-speak')]);
+    });
+  });
+  document.getElementById('readAll').onclick = () => {
+    if (speaking) { stopSpeak(); return; }
+    const all = [texts.welcome, texts.hash, texts.segment, texts.examples, texts.summary].join('\n');
+    speak(all);
+    document.getElementById('readAll').classList.add('on');
+  };
+  document.getElementById('stopRead').onclick = stopSpeak;
+</script>
+</body>
+</html>
