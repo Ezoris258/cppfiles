@@ -2,7 +2,7 @@
 using namespace std;
 using ll = long long;
 const int MAXN = 1000005;
-ll a[MAXN], stleft[MAXN], stright[MAXN], l[MAXN], r[MAXN],n,ans;
+ll a[MAXN], stleft[MAXN], stright[MAXN], l[MAXN], r[MAXN], n, ans;
 
 int main()
 {
@@ -27,12 +27,12 @@ int main()
         }
         else
         {
-            r[i] = n+1;
+            r[i] = n + 1;
         }
-        stright[++top]=i;
+        stright[++top] = i;
     }
 
-    top=0;
+    top = 0;
     for (int i = 1; i <= n; i++)
     {
         while (top > 0 && a[stleft[top]] >= a[i])
@@ -47,14 +47,14 @@ int main()
         {
             l[i] = 0;
         }
-         stleft[++top]=i;
+        stleft[++top] = i;
     }
 
-    for(int i=1;i<=n;i++){
-        ans=max(ans,((r[i]-l[i]-1)*a[i]));
+    for (int i = 1; i <= n; i++)
+    {
+        ans = max(ans, ((r[i] - l[i] - 1) * a[i]));
     }
-    cout<<ans;
-
+    cout << ans;
 
     return 0;
 }
