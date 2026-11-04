@@ -1,8 +1,11 @@
-#include <climits>
-#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
 
-int main() {
-    std::cout << LLONG_MIN << '\n';  // 最小值
-    std::cout << LLONG_MAX << '\n';  // 最大值
-    std::cout << ULLONG_MAX << '\n'; // unsigned long long 最大值
+int main()
+{
+    int a[8] = {1, 2, 2, 4, 4, 4, 7, 9};
+    auto pos = lower_bound(a, a + 8, 4) -a; // 减去 a 得到下标
+    cout<<pos;
+
+    return 0;
 }
