@@ -1,44 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
-const int MAXN = 2e5 + 5;
-
-ll n, len[MAXN], lenr[MAXN], tot;
-char ch[MAXN], chr[MAXN];
-
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    cin >> n;
-    for (int i = 1; i <= n; i++)
+    int n, m;
+    cin >> n >> m;
+    vector<int> a;
+    a.reserve(n);
+    while (n--)
     {
-        cin >> len[i] >> ch[i];
-        tot += len[i];
-        lenr[n - i + 1] = len[i];
-        chr[n - i + 1] = ch[i];
+        int temp;
+        cin >> temp;
+        a.push_back(temp);
     }
 
-    ll tar = tot / 2, ans = 0, i = 1, j = 1, 
-        proc = 0, rem = len[1], remr = lenr[1];
-
-    while (proc < tar && i <= n && j <= n)
+    long long ans = 0;
+    for (int b = 29; b >= 0; b--)
     {
-        ll cur = min({rem, remr, tar - proc});
-        if (ch[i] != chr[j])
-            ans += cur;
-        proc += cur;
-        rem -= cur;
-        remr -= cur;
-
-        if (rem == 0 && ++i <= n)
-            rem = len[i];
-        if (remr == 0 && ++j <= n)
-            remr = lenr[j];
+        ans = ans | (1LL << b);
+        int cnt = 0;
+        for (int i : a)
+        {
+            if ((i & ans) == ans)
+            {
+                cnt++;
+            }
+        }
+        if (cnt < m)
+        {
+            ans ^= (1LL << b);
+        }
     }
 
-    cout << ans << '\n';
+    cout << ans;
 
     return 0;
 }
