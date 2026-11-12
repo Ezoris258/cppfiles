@@ -16,7 +16,7 @@ int main(){
     }
     for(int i=1;i<=n;i++){
         for(int j=1;j<=n;j++){
-            carpet[j][i]+=carpet[j-1][i];
+            carpet[i][j]+=carpet[j-1][i];
             carpet[j][i]+=carpet[j][i-1];
         }
     }
